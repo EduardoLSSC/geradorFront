@@ -1,18 +1,23 @@
 "use client"
 import RINGS from "vanta/dist/vanta.rings.min"
 import * as THREE from "three"
-import React, {useState, useEffect, useRef, FormEvent} from 'react'
-import {Button, styled, TextField} from "@mui/material";
+import React, {useState, useEffect, useRef, FormEvent, useContext} from 'react'
+import {Button, TextField} from "@mui/material";
 import {api} from "@/service/api";
-interface User{
+import {UserContext} from "@/app/layout";
+import {useRouter} from "next/navigation";
+
+export interface User {
+    id: number,
     email: String,
     password: String
 }
-
 export default function Login() {
-    const [user, setUser] = useState<User>({email: '', password: ''})
+    const [user, setUser] = useState<User>({id: 0, email: '', password: ''})
     const [vantaEffect, setVantaEffect] = useState(null)
     const myRef = useRef(null)
+    const {setUserLogged} = useContext(UserContext)
+    const router = useRouter()
     useEffect(() => {
         if (!vantaEffect) {
             setVantaEffect(RINGS({
@@ -37,10 +42,15 @@ export default function Login() {
 
     async function SearchUser(event: FormEvent) {
         event.preventDefault()
-        await api.post("/usuarios/login",{
+        await api.post("/usuarios/login", {
             email: user.email,
             password: user.password
-        }).then(result => console.log(result))
+        }).then(result => {
+            setUserLogged(result.data)
+            router.push('/dashboard')
+        }).catch(() => {
+            console.log("não existe")
+        })
     }
 
     return (
@@ -61,7 +71,6 @@ export default function Login() {
                         "& .MuiInput-underline:after": {
                             borderBottomColor: "white",
                         },
-                        //hover
                         "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
                             borderBottomColor: "white",
                         },
@@ -74,7 +83,9 @@ export default function Login() {
                             color: "white",
                             fontFamily: "'Poppins', sans-serif",
                         },
-                    }} color={"secondary"} autoComplete={'off'} defaultValue={user.email} onChange={(e) => setUser({email: e.target.value, password: user.password})} label="Email" type={"email"} variant="standard"/>
+                    }} color={"secondary"} autoComplete={'off'} defaultValue={user.email}
+                               onChange={(e) => setUser({email: e.target.value, password: user.password})} label="Email"
+                               type={"email"} variant="standard"/>
                     <TextField sx={{
                         "& label.Mui-focused": {
                             color: "white",
@@ -85,7 +96,6 @@ export default function Login() {
                         "& .MuiInput-underline:after": {
                             borderBottomColor: "white",
                         },
-                        //hover
                         "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
                             borderBottomColor: "white",
                         },
@@ -98,12 +108,13 @@ export default function Login() {
                             color: "white",
                             fontFamily: "'Poppins', sans-serif",
                         },
-                    }} autoComplete={'off'} defaultValue={user.password} onChange={(e) => setUser({password: e.target.value, email: user.email})} label="Password" type={"password"} variant="standard"/>
-                    <Button className={"bg-fuchsia-500 hover:bg-fuchsia-600"} variant="contained" type={"submit"}>Login</Button>
+                    }} autoComplete={'off'} defaultValue={user.password}
+                               onChange={(e) => setUser({password: e.target.value, email: user.email})} label="Password"
+                               type={"password"} variant="standard"/>
+                    <Button className={"bg-fuchsia-500 hover:bg-fuchsia-600"} variant="contained"
+                            type={"submit"}>Login</Button>
                 </form>
             </div>
         </div>
-
-
     )
 }
