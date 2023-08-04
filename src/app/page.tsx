@@ -7,8 +7,7 @@ import {api} from "@/service/api";
 import {UserContext} from "@/app/layout";
 import {useRouter} from "next/navigation";
 
-export interface User {
-    id: number,
+interface User {
     email: String,
     password: String
 }

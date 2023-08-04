@@ -1,8 +1,15 @@
 'use client'
 import {useContext} from "react";
 import {UserContext} from "@/app/layout";
-import {User} from "@/app/page";
+import {bgcolor} from "@mui/system";
+import menuLateral from "@/app/components/menu-lateral";
+import MenuLateral from "@/app/components/menu-lateral";
 
+interface User {
+    id: number
+    email: String,
+    password: String
+}
 interface Tarefa{
     id: number,
     description: String,
@@ -11,6 +18,10 @@ interface Tarefa{
 export default function Page() {
     const {userLogged} = useContext(UserContext)
     return(
-        <h1>{userLogged?.name}</h1>
+        <div>
+            <MenuLateral></MenuLateral>
+            <div></div>
+        </div>
+
     )
 }
